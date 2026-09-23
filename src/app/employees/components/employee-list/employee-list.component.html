@@ -1,1 +1,52 @@
-<p>employee-list works!</p>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-brand">Velocity Tech — Employee Portal</div>
+  <div class="navbar-user">
+    <span class="user-info">
+      {{ currentUser?.username }}
+      <span class="role-badge">{{ currentUser?.role }}</span>
+    </span>
+    <button class="btn-logout" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- Main content -->
+<div class="content">
+  <h2>Employees</h2>
+
+  <!-- Loading state -->
+  <div class="loading" *ngIf="loading">Loading employees...</div>
+
+  <!-- Error state -->
+  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <!-- Employees table -->
+  <table *ngIf="!loading && !errorMessage">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Position</th>
+        <th>Role</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of employees">
+        <td>{{ emp.employeeId }}</td>
+        <td>{{ emp.firstName }} {{ emp.lastName }}</td>
+        <td>{{ emp.email }}</td>
+        <td>{{ emp.department }}</td>
+        <td>{{ emp.position }}</td>
+        <td><span class="badge badge-role">{{ emp.role }}</span></td>
+        <td><span class="badge" [ngClass]="'badge-' + emp.status.toLowerCase()">{{ emp.status }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty" *ngIf="!loading && !errorMessage && employees.length === 0">
+    No employees found.
+  </div>
+</div>
