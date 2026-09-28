@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
 import { EmployeeService } from '../../employee.service';
 import { Employee } from '../../../shared/models/employee.model';
@@ -7,7 +8,7 @@ import { Employee } from '../../../shared/models/employee.model';
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss'
 })
@@ -18,6 +19,17 @@ export class EmployeeListComponent implements OnInit {
   errorMessage = '';
   currentUser: { username: string; role: string } | null = null;
 
+  // Pagination state
+  currentPage = 0;         // 0-based (Spring Boot convention)
+  pageSize = 10;
+  totalElements = 0;
+  totalPages = 0;
+  pageSizeOptions = [5, 10, 25, 50];
+
+  // Sort state
+  sortBy = 'employeeId';
+  sortDir: 'asc' | 'desc' = 'asc';
+
   constructor(
     private authService: AuthService,
     private employeeService: EmployeeService
@@ -25,9 +37,18 @@ export class EmployeeListComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    this.employeeService.getAllEmployees().subscribe({
-      next: (data) => {
-        this.employees = data;
+    this.loadEmployees();
+  }
+
+  loadEmployees(): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.employeeService.getEmployeesPaged(this.currentPage, this.pageSize, this.sortBy, this.sortDir).subscribe({
+      next: (page) => {
+        this.employees = page.content;
+        this.totalElements = page.totalElements;
+        this.totalPages = page.totalPages;
+        this.currentPage = page.number;
         this.loading = false;
       },
       error: () => {
@@ -35,6 +56,50 @@ export class EmployeeListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // Sort by a column — toggle direction if same column
+  sortByColumn(column: string): void {
+    if (this.sortBy === column) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortDir = 'asc';
+    }
+    this.currentPage = 0;
+    this.loadEmployees();
+  }
+
+  // Page navigation
+  goToPage(page: number): void {
+    if (page < 0 || page >= this.totalPages) return;
+    this.currentPage = page;
+    this.loadEmployees();
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 0;
+    this.loadEmployees();
+  }
+
+  // Helpers for template
+  get firstItem(): number {
+    return this.totalElements === 0 ? 0 : this.currentPage * this.pageSize + 1;
+  }
+
+  get lastItem(): number {
+    return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
+  }
+
+  getPageNumbers(): number[] {
+    const maxVisible = 5;
+    const half = Math.floor(maxVisible / 2);
+    let start = Math.max(0, this.currentPage - half);
+    let end = Math.min(this.totalPages - 1, start + maxVisible - 1);
+    if (end - start < maxVisible - 1) {
+      start = Math.max(0, end - maxVisible + 1);
+    }
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
   logout(): void {
