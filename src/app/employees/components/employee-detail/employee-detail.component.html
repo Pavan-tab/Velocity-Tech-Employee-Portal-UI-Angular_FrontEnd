@@ -1,0 +1,111 @@
+<!-- Navbar -->
+<nav class="navbar">
+  <span class="navbar-brand">⚡ Velocity Tech — Employee Portal</span>
+</nav>
+
+<!-- Page wrapper -->
+<div class="page">
+
+  <!-- Back button -->
+  <div class="page-header">
+    <button class="btn-back" (click)="goBack()">← Back to List</button>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading" *ngIf="loading">Loading employee profile...</div>
+
+  <!-- Error state -->
+  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <!-- Employee profile card -->
+  <div class="profile-card" *ngIf="!loading && !errorMessage && employee">
+
+    <!-- Card header: avatar initials, name, ID, status badge -->
+    <div class="profile-header">
+      <div class="profile-avatar">
+        {{ employee.firstName.charAt(0) }}{{ employee.lastName.charAt(0) }}
+      </div>
+      <div class="profile-title">
+        <h1>{{ employee.fullName }}</h1>
+        <span class="employee-id"># {{ employee.employeeId }}</span>
+        <span class="badge" [ngClass]="statusClass(employee.status)">
+          {{ employee.status.replace('_', ' ') }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Card body -->
+    <div class="profile-body">
+
+      <!-- Work Information -->
+      <section class="detail-section">
+        <h2 class="section-title">Work Information</h2>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="label">Department</span>
+            <span class="value">{{ employee.department }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Position</span>
+            <span class="value">{{ employee.position }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Role</span>
+            <span class="value badge badge-role">{{ employee.role }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Hire Date</span>
+            <span class="value">{{ formatDate(employee.hireDate) }}</span>
+          </div>
+          <div class="detail-item" *ngIf="employee.managerId">
+            <span class="label">Manager ID</span>
+            <span class="value">{{ employee.managerId }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Information -->
+      <section class="detail-section">
+        <h2 class="section-title">Contact Information</h2>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="label">Email</span>
+            <span class="value">
+              <a [href]="'mailto:' + employee.email">{{ employee.email }}</a>
+            </span>
+          </div>
+          <div class="detail-item" *ngIf="employee.phoneNumber">
+            <span class="label">Phone</span>
+            <span class="value">{{ employee.phoneNumber }}</span>
+          </div>
+          <div class="detail-item wide" *ngIf="employee.address">
+            <span class="label">Address</span>
+            <span class="value">{{ employee.address }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Audit Information -->
+      <section class="detail-section"
+        *ngIf="employee.createdAt || employee.updatedAt || employee.createdBy">
+        <h2 class="section-title">Audit</h2>
+        <div class="detail-grid">
+          <div class="detail-item" *ngIf="employee.createdAt">
+            <span class="label">Created</span>
+            <span class="value">{{ formatDate(employee.createdAt) }}</span>
+          </div>
+          <div class="detail-item" *ngIf="employee.updatedAt">
+            <span class="label">Last Updated</span>
+            <span class="value">{{ formatDate(employee.updatedAt) }}</span>
+          </div>
+          <div class="detail-item" *ngIf="employee.createdBy">
+            <span class="label">Created By</span>
+            <span class="value">{{ employee.createdBy }}</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+</div>

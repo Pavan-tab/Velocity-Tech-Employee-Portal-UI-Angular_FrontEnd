@@ -27,4 +27,8 @@ export class EmployeeService {
       .set('sort', `${sortBy},${sortDir}`);
     return this.http.get<PagedResponse<Employee>>(this.API, { params });
   }
+
+  getEmployeeById(id: number): Observable<Employee> {
+    return this.http.get<Employee>(`${this.API}/${id}`);
+  }
 }

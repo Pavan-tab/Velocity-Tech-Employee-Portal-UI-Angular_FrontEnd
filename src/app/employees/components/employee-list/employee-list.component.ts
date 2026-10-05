@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/auth.service';
 import { EmployeeService } from '../../employee.service';
 import { Employee } from '../../../shared/models/employee.model';
@@ -32,7 +33,8 @@ export class EmployeeListComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -56,6 +58,10 @@ export class EmployeeListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  navigateToDetail(emp: Employee): void {
+    this.router.navigate(['/employees', emp.id]);
   }
 
   // Sort by a column — toggle direction if same column

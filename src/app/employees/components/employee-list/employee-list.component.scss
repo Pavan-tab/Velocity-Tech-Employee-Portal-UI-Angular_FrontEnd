@@ -136,6 +136,10 @@ table {
   tbody tr:hover {
     background: #f8fafc;
   }
+
+  tbody tr.clickable-row {
+    cursor: pointer;
+  }
 }
 
 .sort-icon {

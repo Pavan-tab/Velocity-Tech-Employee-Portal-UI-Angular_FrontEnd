@@ -70,7 +70,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let emp of employees">
+        <tr
+          *ngFor="let emp of employees"
+          class="clickable-row"
+          (click)="navigateToDetail(emp)"
+          title="View {{ emp.firstName }} {{ emp.lastName }}'s profile"
+        >
           <td>{{ emp.employeeId }}</td>
           <td>{{ emp.firstName }} {{ emp.lastName }}</td>
           <td>{{ emp.email }}</td>
