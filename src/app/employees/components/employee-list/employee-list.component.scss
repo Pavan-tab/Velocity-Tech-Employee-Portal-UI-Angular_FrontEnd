@@ -1,3 +1,4 @@
+// ── Navbar ───────────────────────────────────────────────────────────────────
 .navbar {
   display: flex;
   align-items: center;
@@ -47,34 +48,54 @@
   cursor: pointer;
   transition: background 0.2s;
 
-  &:hover {
-    background: #ffffff1a;
-  }
+  &:hover { background: #ffffff1a; }
 }
 
-.content {
-  padding: 1.5rem;
-}
+// ── Content ──────────────────────────────────────────────────────────────────
+.content { padding: 1.5rem; }
 
 .content-header {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 1.25rem;
 
-  h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1a1a2e;
-    margin: 0;
-  }
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
 
-  .total-count {
-    font-size: 0.8rem;
-    color: #64748b;
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin: 0;
+    }
+
+    .total-count {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
   }
 }
 
+// ── Primary action button (Create Employee) ──────────────────────────────────
+.btn-primary {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+
+  &:hover  { background: #4338ca; }
+  &:active { transform: scale(0.98); }
+}
+
+// ── States ───────────────────────────────────────────────────────────────────
 .loading, .empty {
   color: #666;
   padding: 1rem 0;
@@ -89,6 +110,7 @@
   font-size: 0.875rem;
 }
 
+// ── Table ────────────────────────────────────────────────────────────────────
 .table-wrapper {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -116,10 +138,13 @@ table {
       cursor: pointer;
       user-select: none;
 
-      &:hover {
-        background: #f1f5f9;
-        color: #1a1a2e;
-      }
+      &:hover { background: #f1f5f9; color: #1a1a2e; }
+    }
+
+    // Narrow fixed width for the actions column
+    &.col-actions {
+      width: 140px;
+      text-align: center;
     }
   }
 
@@ -127,19 +152,17 @@ table {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #f1f5f9;
     color: #1f2937;
+
+    &.col-actions {
+      text-align: center;
+      white-space: nowrap;
+    }
   }
 
-  tbody tr:last-child td {
-    border-bottom: none;
-  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover         { background: #f8fafc; }
 
-  tbody tr:hover {
-    background: #f8fafc;
-  }
-
-  tbody tr.clickable-row {
-    cursor: pointer;
-  }
+  tbody tr.clickable-row { cursor: pointer; }
 }
 
 .sort-icon {
@@ -149,11 +172,10 @@ table {
   color: #94a3b8;
   transition: color 0.15s;
 
-  &.active {
-    color: #4f46e5;
-  }
+  &.active { color: #4f46e5; }
 }
 
+// ── Badges ───────────────────────────────────────────────────────────────────
 .badge {
   display: inline-block;
   padding: 0.2rem 0.6rem;
@@ -169,8 +191,39 @@ table {
   &.badge-terminated { background: #fee2e2; color: #b91c1c; }
 }
 
-// ── Pagination ─────────────────────────────────────────────────────────────────
+// ── Row action buttons (Edit / Delete) ───────────────────────────────────────
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 
+  & + & { margin-left: 0.35rem; }
+
+  &.btn-edit {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+
+    &:hover { background: #dbeafe; border-color: #93c5fd; }
+  }
+
+  &.btn-delete {
+    background: #fff1f2;
+    color: #be123c;
+    border-color: #fecdd3;
+
+    &:hover { background: #ffe4e6; border-color: #fda4af; }
+  }
+}
+
+// ── Pagination ───────────────────────────────────────────────────────────────
 .pagination-bar {
   display: flex;
   align-items: center;
@@ -220,10 +273,7 @@ table {
     cursor: default;
   }
 
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
 }
 
 .page-size-selector {

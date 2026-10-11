@@ -1,6 +1,6 @@
-<!-- Navbar -->
+<!-- ── Navbar ──────────────────────────────────────────────────────────────── -->
 <nav class="navbar">
-  <div class="navbar-brand">Velocity Tech — Employee Portal</div>
+  <span class="navbar-brand">⚡ Velocity Tech — Employee Portal</span>
   <div class="navbar-user">
     <span class="user-info">
       {{ currentUser?.username }}
@@ -10,23 +10,31 @@
   </div>
 </nav>
 
-<!-- Main content -->
+<!-- ── Main content ───────────────────────────────────────────────────────── -->
 <div class="content">
+
+  <!-- Header row: title + Create button (HR only) -->
   <div class="content-header">
-    <h2>Employees</h2>
-    <span class="total-count" *ngIf="!loading && !errorMessage">
-      {{ totalElements }} employee{{ totalElements !== 1 ? 's' : '' }}
-    </span>
+    <div class="header-left">
+      <h2>Employees</h2>
+      <span class="total-count">{{ totalElements }} employee{{ totalElements !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <!-- Create Employee — HR only -->
+    <button
+      *ngIf="isHR()"
+      class="btn-primary"
+      (click)="onCreate()">
+      + Create Employee
+    </button>
   </div>
 
-  <!-- Loading state -->
-  <div class="loading" *ngIf="loading">Loading employees...</div>
+  <!-- Loading / Error states -->
+  <div *ngIf="loading" class="loading">Loading employees...</div>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-  <!-- Error state -->
-  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-
-  <!-- Employees table -->
-  <div class="table-wrapper" *ngIf="!loading && !errorMessage">
+  <!-- Table -->
+  <div *ngIf="!loading && !errorMessage" class="table-wrapper">
     <table>
       <thead>
         <tr>
@@ -67,61 +75,91 @@
               {{ sortBy === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : '↕' }}
             </span>
           </th>
+          <!-- Actions column — only rendered when HR or Manager is logged in -->
+          <th *ngIf="isHR() || isManager()" class="col-actions">Actions</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr
-          *ngFor="let emp of employees"
-          class="clickable-row"
-          (click)="navigateToDetail(emp)"
-          title="View {{ emp.firstName }} {{ emp.lastName }}'s profile"
-        >
-          <td>{{ emp.employeeId }}</td>
-          <td>{{ emp.firstName }} {{ emp.lastName }}</td>
-          <td>{{ emp.email }}</td>
-          <td>{{ emp.department }}</td>
-          <td>{{ emp.position }}</td>
-          <td><span class="badge badge-role">{{ emp.role }}</span></td>
-          <td><span class="badge" [ngClass]="'badge-' + emp.status.toLowerCase()">{{ emp.status }}</span></td>
-        </tr>
+        <ng-container *ngIf="employees.length > 0; else emptyRow">
+          <tr
+            *ngFor="let emp of employees"
+            class="clickable-row"
+            (click)="navigateToDetail(emp)">
+
+            <td>{{ emp.employeeId }}</td>
+            <td>{{ emp.firstName }} {{ emp.lastName }}</td>
+            <td>{{ emp.email }}</td>
+            <td>{{ emp.department }}</td>
+            <td>{{ emp.position }}</td>
+            <td><span class="badge badge-role">{{ emp.role }}</span></td>
+            <td>
+              <span class="badge" [ngClass]="'badge-' + emp.status.toLowerCase()">
+                {{ emp.status.replace('_', ' ') }}
+              </span>
+            </td>
+
+            <!-- Actions cell — HR or Manager only -->
+            <td *ngIf="isHR() || isManager()" class="col-actions" (click)="$event.stopPropagation()">
+              <!-- Edit: HR and Manager -->
+              <button
+                *ngIf="isHR() || isManager()"
+                class="btn-action btn-edit"
+                title="Edit employee"
+                (click)="onEdit(emp, $event)">
+                ✏️ Edit
+              </button>
+
+              <!-- Delete: HR only -->
+              <button
+                *ngIf="isHR()"
+                class="btn-action btn-delete"
+                title="Delete employee"
+                (click)="onDelete(emp, $event)">
+                🗑️ Delete
+              </button>
+            </td>
+
+          </tr>
+        </ng-container>
+
+        <ng-template #emptyRow>
+          <tr>
+            <td [attr.colspan]="(isHR() || isManager()) ? 8 : 7" class="empty">
+              No employees found.
+            </td>
+          </tr>
+        </ng-template>
       </tbody>
     </table>
 
-    <!-- Empty state -->
-    <div class="empty" *ngIf="employees.length === 0">
-      No employees found.
-    </div>
-
-    <!-- Pagination controls -->
-    <div class="pagination-bar" *ngIf="totalPages > 0">
-      <!-- Left: showing x–y of z -->
-      <div class="pagination-info">
+    <!-- Pagination bar -->
+    <div class="pagination-bar">
+      <span class="pagination-info">
         Showing {{ firstItem }}–{{ lastItem }} of {{ totalElements }}
-      </div>
+      </span>
 
-      <!-- Center: page buttons -->
       <div class="pagination-controls">
-        <button class="page-btn" (click)="goToPage(0)" [disabled]="currentPage === 0" title="First page">«</button>
-        <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0" title="Previous page">‹</button>
-
+        <button class="page-btn" (click)="goToPage(0)"            [disabled]="currentPage === 0">«</button>
+        <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0">‹</button>
         <button
           *ngFor="let p of getPageNumbers()"
           class="page-btn"
           [class.active]="p === currentPage"
-          (click)="goToPage(p)"
-        >{{ p + 1 }}</button>
-
-        <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages - 1" title="Next page">›</button>
-        <button class="page-btn" (click)="goToPage(totalPages - 1)" [disabled]="currentPage === totalPages - 1" title="Last page">»</button>
+          (click)="goToPage(p)">
+          {{ p + 1 }}
+        </button>
+        <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">›</button>
+        <button class="page-btn" (click)="goToPage(totalPages - 1)"  [disabled]="currentPage >= totalPages - 1">»</button>
       </div>
 
-      <!-- Right: page size selector -->
       <div class="page-size-selector">
-        <label for="pageSize">Rows per page:</label>
-        <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+        Rows per page:
+        <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
           <option *ngFor="let opt of pageSizeOptions" [value]="opt">{{ opt }}</option>
         </select>
       </div>
     </div>
   </div>
+
 </div>

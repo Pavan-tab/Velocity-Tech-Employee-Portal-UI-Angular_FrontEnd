@@ -1,32 +1,24 @@
-<!-- Navbar -->
-<nav class="navbar">
-  <span class="navbar-brand">⚡ Velocity Tech — Employee Portal</span>
-</nav>
+<!-- ── Top bar ─────────────────────────────────────────────────────────────── -->
+<div class="detail-topbar">
+  <button class="btn-back" (click)="goBack()">← Back to List</button>
+</div>
 
-<!-- Page wrapper -->
-<div class="page">
+<!-- ── Loading / Error states ───────────────────────────────────────────────── -->
+<div *ngIf="loading" class="loading">Loading employee profile...</div>
+<div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-  <!-- Back button -->
-  <div class="page-header">
-    <button class="btn-back" (click)="goBack()">← Back to List</button>
-  </div>
+<!-- ── Profile card ───────────────────────────────────────────────────────── -->
+<div *ngIf="!loading && employee" class="profile-card">
 
-  <!-- Loading state -->
-  <div class="loading" *ngIf="loading">Loading employee profile...</div>
+  <!-- Card header: avatar · name · id · status · action buttons -->
+  <div class="card-header">
+    <div class="avatar">
+      {{ employee.firstName.charAt(0) }}{{ employee.lastName.charAt(0) }}
+    </div>
 
-  <!-- Error state -->
-  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-
-  <!-- Employee profile card -->
-  <div class="profile-card" *ngIf="!loading && !errorMessage && employee">
-
-    <!-- Card header: avatar initials, name, ID, status badge -->
-    <div class="profile-header">
-      <div class="profile-avatar">
-        {{ employee.firstName.charAt(0) }}{{ employee.lastName.charAt(0) }}
-      </div>
-      <div class="profile-title">
-        <h1>{{ employee.fullName }}</h1>
+    <div class="header-info">
+      <h1 class="employee-name">{{ employee.fullName }}</h1>
+      <div class="header-meta">
         <span class="employee-id"># {{ employee.employeeId }}</span>
         <span class="badge" [ngClass]="statusClass(employee.status)">
           {{ employee.status.replace('_', ' ') }}
@@ -34,78 +26,81 @@
       </div>
     </div>
 
-    <!-- Card body -->
-    <div class="profile-body">
+    <!-- Action buttons — role-gated -->
+    <div class="header-actions">
+      <!-- Edit: HR and Manager -->
+      <button
+        *ngIf="isHR() || isManager()"
+        class="btn-detail-action btn-detail-edit"
+        title="Edit employee"
+        (click)="onEdit()">
+        ✏️ Edit
+      </button>
 
-      <!-- Work Information -->
-      <section class="detail-section">
-        <h2 class="section-title">Work Information</h2>
-        <div class="detail-grid">
-          <div class="detail-item">
-            <span class="label">Department</span>
-            <span class="value">{{ employee.department }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Position</span>
-            <span class="value">{{ employee.position }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Role</span>
-            <span class="value badge badge-role">{{ employee.role }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Hire Date</span>
-            <span class="value">{{ formatDate(employee.hireDate) }}</span>
-          </div>
-          <div class="detail-item" *ngIf="employee.managerId">
-            <span class="label">Manager ID</span>
-            <span class="value">{{ employee.managerId }}</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Contact Information -->
-      <section class="detail-section">
-        <h2 class="section-title">Contact Information</h2>
-        <div class="detail-grid">
-          <div class="detail-item">
-            <span class="label">Email</span>
-            <span class="value">
-              <a [href]="'mailto:' + employee.email">{{ employee.email }}</a>
-            </span>
-          </div>
-          <div class="detail-item" *ngIf="employee.phoneNumber">
-            <span class="label">Phone</span>
-            <span class="value">{{ employee.phoneNumber }}</span>
-          </div>
-          <div class="detail-item wide" *ngIf="employee.address">
-            <span class="label">Address</span>
-            <span class="value">{{ employee.address }}</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Audit Information -->
-      <section class="detail-section"
-        *ngIf="employee.createdAt || employee.updatedAt || employee.createdBy">
-        <h2 class="section-title">Audit</h2>
-        <div class="detail-grid">
-          <div class="detail-item" *ngIf="employee.createdAt">
-            <span class="label">Created</span>
-            <span class="value">{{ formatDate(employee.createdAt) }}</span>
-          </div>
-          <div class="detail-item" *ngIf="employee.updatedAt">
-            <span class="label">Last Updated</span>
-            <span class="value">{{ formatDate(employee.updatedAt) }}</span>
-          </div>
-          <div class="detail-item" *ngIf="employee.createdBy">
-            <span class="label">Created By</span>
-            <span class="value">{{ employee.createdBy }}</span>
-          </div>
-        </div>
-      </section>
-
+      <!-- Delete: HR only -->
+      <button
+        *ngIf="isHR()"
+        class="btn-detail-action btn-detail-delete"
+        title="Delete employee"
+        (click)="onDelete()">
+        🗑️ Delete
+      </button>
     </div>
+  </div>
+
+  <!-- ── Work Information ─────────────────────────────────────────────────── -->
+  <div class="card-section">
+    <h2 class="section-title">Work Information</h2>
+    <dl class="info-grid">
+      <dt>Department</dt>  <dd>{{ employee.department }}</dd>
+      <dt>Position</dt>    <dd>{{ employee.position }}</dd>
+      <dt>Role</dt>        <dd>{{ employee.role }}</dd>
+      <dt>Hire Date</dt>   <dd>{{ formatDate(employee.hireDate) }}</dd>
+      <dt *ngIf="employee.managerId">Manager ID</dt>
+      <dd *ngIf="employee.managerId">{{ employee.managerId }}</dd>
+    </dl>
+  </div>
+
+  <!-- ── Contact Information ──────────────────────────────────────────────── -->
+  <div class="card-section">
+    <h2 class="section-title">Contact Information</h2>
+    <dl class="info-grid">
+      <dt>Email</dt>
+      <dd><a [href]="'mailto:' + employee.email" class="link-email">{{ employee.email }}</a></dd>
+
+      <ng-container *ngIf="employee.phoneNumber">
+        <dt>Phone</dt>
+        <dd>{{ employee.phoneNumber }}</dd>
+      </ng-container>
+
+      <ng-container *ngIf="employee.address">
+        <dt>Address</dt>
+        <dd>{{ employee.address }}</dd>
+      </ng-container>
+    </dl>
+  </div>
+
+  <!-- ── Audit Information ─────────────────────────────────────────────────── -->
+  <div
+    class="card-section"
+    *ngIf="employee.createdAt || employee.updatedAt || employee.createdBy">
+    <h2 class="section-title">Audit</h2>
+    <dl class="info-grid">
+      <ng-container *ngIf="employee.createdAt">
+        <dt>Created</dt>
+        <dd>{{ formatDate(employee.createdAt) }}</dd>
+      </ng-container>
+
+      <ng-container *ngIf="employee.updatedAt">
+        <dt>Last Updated</dt>
+        <dd>{{ formatDate(employee.updatedAt) }}</dd>
+      </ng-container>
+
+      <ng-container *ngIf="employee.createdBy">
+        <dt>Created By</dt>
+        <dd>{{ employee.createdBy }}</dd>
+      </ng-container>
+    </dl>
   </div>
 
 </div>

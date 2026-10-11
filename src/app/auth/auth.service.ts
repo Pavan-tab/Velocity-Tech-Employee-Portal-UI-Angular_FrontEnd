@@ -16,12 +16,13 @@ export interface AuthResponse {
   role: string;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-
   private readonly API = `${environment.apiUrl}/auth`;
   private readonly TOKEN_KEY = 'vt_token';
-  private readonly USER_KEY  = 'vt_user';
+  private readonly USER_KEY = 'vt_user';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -65,5 +66,22 @@ export class AuthService {
 
   getRole(): string | null {
     return this.getCurrentUser()?.role ?? null;
+  }
+
+  // ── Role helpers ────────────────────────────────────────────────────────────
+
+  /** Returns true when the logged-in user has the HR role. */
+  isHR(): boolean {
+    return this.getRole() === 'HR';
+  }
+
+  /** Returns true when the logged-in user has the MANAGER role. */
+  isManager(): boolean {
+    return this.getRole() === 'MANAGER';
+  }
+
+  /** Returns true when the logged-in user has the EMPLOYEE role. */
+  isEmployee(): boolean {
+    return this.getRole() === 'EMPLOYEE';
   }
 }

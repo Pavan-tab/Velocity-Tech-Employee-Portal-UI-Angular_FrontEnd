@@ -14,14 +14,13 @@ import { Employee } from '../../../shared/models/employee.model';
   styleUrl: './employee-list.component.scss'
 })
 export class EmployeeListComponent implements OnInit {
-
   employees: Employee[] = [];
   loading = true;
   errorMessage = '';
   currentUser: { username: string; role: string } | null = null;
 
   // Pagination state
-  currentPage = 0;         // 0-based (Spring Boot convention)
+  currentPage = 0;   // 0-based (Spring Boot convention)
   pageSize = 10;
   totalElements = 0;
   totalPages = 0;
@@ -64,7 +63,39 @@ export class EmployeeListComponent implements OnInit {
     this.router.navigate(['/employees', emp.id]);
   }
 
-  // Sort by a column — toggle direction if same column
+  // ── Role helpers (delegated to AuthService) ─────────────────────────────────
+
+  isHR(): boolean     { return this.authService.isHR(); }
+  isManager(): boolean { return this.authService.isManager(); }
+  isEmployee(): boolean { return this.authService.isEmployee(); }
+
+  // ── Action stubs (Phase 3 will wire these to real forms/dialogs) ────────────
+
+  /** HR only — navigate to Create Employee form (Phase 3). */
+  onCreate(): void {
+    this.router.navigate(['/employees/new']);
+  }
+
+  /** HR / Manager — navigate to Edit Employee form (Phase 3). */
+  onEdit(emp: Employee, event: MouseEvent): void {
+    event.stopPropagation(); // prevent row click from firing
+    this.router.navigate(['/employees', emp.id, 'edit']);
+  }
+
+  /** HR only — confirm then delete (Phase 3 replaces confirm with modal). */
+  onDelete(emp: Employee, event: MouseEvent): void {
+    event.stopPropagation(); // prevent row click from firing
+    const confirmed = window.confirm(
+      `Delete employee "${emp.firstName} ${emp.lastName}" (${emp.employeeId})?\nThis action cannot be undone.`
+    );
+    if (confirmed) {
+      // TODO Phase 3: call employeeService.deleteEmployee(emp.id)
+      console.log('[Phase 3 stub] Delete employee id:', emp.id);
+    }
+  }
+
+  // ── Sort ────────────────────────────────────────────────────────────────────
+
   sortByColumn(column: string): void {
     if (this.sortBy === column) {
       this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
@@ -76,7 +107,8 @@ export class EmployeeListComponent implements OnInit {
     this.loadEmployees();
   }
 
-  // Page navigation
+  // ── Pagination ──────────────────────────────────────────────────────────────
+
   goToPage(page: number): void {
     if (page < 0 || page >= this.totalPages) return;
     this.currentPage = page;
@@ -88,7 +120,6 @@ export class EmployeeListComponent implements OnInit {
     this.loadEmployees();
   }
 
-  // Helpers for template
   get firstItem(): number {
     return this.totalElements === 0 ? 0 : this.currentPage * this.pageSize + 1;
   }
