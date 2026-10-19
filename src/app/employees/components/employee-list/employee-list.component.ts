@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/auth.service';
 import { EmployeeService } from '../../employee.service';
-import { Employee } from '../../../shared/models/employee.model';
+import { Employee, EmployeeStatus } from '../../../shared/models/employee.model';
+import { FilterBarComponent, FilterChange } from '../filter-bar/filter-bar.component';
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FilterBarComponent],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss'
 })
@@ -30,6 +31,17 @@ export class EmployeeListComponent implements OnInit {
   sortBy = 'employeeId';
   sortDir: 'asc' | 'desc' = 'asc';
 
+  // Filter state
+  filterDepartment: string = '';
+  filterStatus: EmployeeStatus | '' = '';
+
+  /** Unique sorted department list derived from the current page's data.
+   *  Passed as @Input to FilterBarComponent. */
+  get availableDepartments(): string[] {
+    const depts = this.employees.map(e => e.department).filter(Boolean);
+    return [...new Set(depts)].sort();
+  }
+
   constructor(
     private authService: AuthService,
     private employeeService: EmployeeService,
@@ -44,19 +56,38 @@ export class EmployeeListComponent implements OnInit {
   loadEmployees(): void {
     this.loading = true;
     this.errorMessage = '';
-    this.employeeService.getEmployeesPaged(this.currentPage, this.pageSize, this.sortBy, this.sortDir).subscribe({
-      next: (page) => {
-        this.employees = page.content;
-        this.totalElements = page.totalElements;
-        this.totalPages = page.totalPages;
-        this.currentPage = page.number;
-        this.loading = false;
-      },
-      error: () => {
-        this.errorMessage = 'Failed to load employees. Please try again.';
-        this.loading = false;
-      }
-    });
+    this.employeeService
+      .getEmployeesPaged(
+        this.currentPage,
+        this.pageSize,
+        this.sortBy,
+        this.sortDir,
+        this.filterDepartment,
+        this.filterStatus
+      )
+      .subscribe({
+        next: (page) => {
+          this.employees = page.content;
+          this.totalElements = page.totalElements;
+          this.totalPages = page.totalPages;
+          this.currentPage = page.number;
+          this.loading = false;
+        },
+        error: () => {
+          this.errorMessage = 'Failed to load employees. Please try again.';
+          this.loading = false;
+        }
+      });
+  }
+
+  // ── Filter ──────────────────────────────────────────────────────────────────
+
+  /** Called whenever FilterBarComponent emits a (filterChange) event. */
+  onFilterChange(filter: FilterChange): void {
+    this.filterDepartment = filter.department;
+    this.filterStatus     = filter.status;
+    this.currentPage      = 0;   // always reset to first page on filter change
+    this.loadEmployees();
   }
 
   navigateToDetail(emp: Employee): void {

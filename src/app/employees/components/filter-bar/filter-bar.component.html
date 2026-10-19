@@ -1,0 +1,39 @@
+<div class="filter-bar">
+
+  <!-- Department dropdown -->
+  <div class="filter-group">
+    <label class="filter-label" for="filter-department">Department</label>
+    <select
+      id="filter-department"
+      class="filter-select"
+      [(ngModel)]="selectedDepartment"
+      (ngModelChange)="onDepartmentChange()">
+      <option value="">All Departments</option>
+      <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+    </select>
+  </div>
+
+  <!-- Status dropdown -->
+  <div class="filter-group">
+    <label class="filter-label" for="filter-status">Status</label>
+    <select
+      id="filter-status"
+      class="filter-select"
+      [(ngModel)]="selectedStatus"
+      (ngModelChange)="onStatusChange()">
+      <option value="">All Statuses</option>
+      <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+    </select>
+  </div>
+
+  <!-- Clear button — only shown when a filter is active -->
+  <button
+    *ngIf="hasActiveFilters"
+    class="btn-clear"
+    type="button"
+    title="Clear all filters"
+    (click)="clearFilters()">
+    ✕ Clear Filters
+  </button>
+
+</div>

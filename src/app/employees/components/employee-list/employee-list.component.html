@@ -29,6 +29,12 @@
     </button>
   </div>
 
+  <!-- Department & Status filter bar -->
+  <app-filter-bar
+    [departments]="availableDepartments"
+    (filterChange)="onFilterChange($event)">
+  </app-filter-bar>
+
   <!-- Loading / Error states -->
   <div *ngIf="loading" class="loading">Loading employees...</div>
   <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
