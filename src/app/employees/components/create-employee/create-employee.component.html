@@ -1,0 +1,210 @@
+<!-- ── Navbar ──────────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <span class="navbar-brand">⚡ Velocity Tech — Employee Portal</span>
+  <div class="navbar-user">
+    <button class="btn-back" (click)="onCancel()">← Back to List</button>
+  </div>
+</nav>
+
+<!-- ── Page content ───────────────────────────────────────────────────────── -->
+<div class="content">
+
+  <div class="page-header">
+    <h2>Create New Employee</h2>
+    <p class="page-subtitle">All fields marked <span class="required-star">*</span> are required.</p>
+  </div>
+
+  <!-- Server-side error banner -->
+  <div *ngIf="submitError" class="error-banner" role="alert">
+    {{ submitError }}
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="form-card">
+
+      <!-- ── Section: Personal Details ─────────────────────────────────── -->
+      <section class="form-section">
+        <h3 class="section-title">Personal Details</h3>
+
+        <div class="form-row">
+          <!-- First Name -->
+          <div class="form-group" [class.has-error]="isInvalid('firstName')">
+            <label for="firstName">First Name <span class="required-star">*</span></label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              placeholder="e.g. Jane"
+              autocomplete="given-name">
+            <span class="field-error" *ngIf="isInvalid('firstName')">
+              <ng-container *ngIf="field('firstName').errors?.['required']">First name is required.</ng-container>
+              <ng-container *ngIf="field('firstName').errors?.['maxlength']">Max 50 characters.</ng-container>
+            </span>
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-group" [class.has-error]="isInvalid('lastName')">
+            <label for="lastName">Last Name <span class="required-star">*</span></label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="e.g. Smith"
+              autocomplete="family-name">
+            <span class="field-error" *ngIf="isInvalid('lastName')">
+              <ng-container *ngIf="field('lastName').errors?.['required']">Last name is required.</ng-container>
+              <ng-container *ngIf="field('lastName').errors?.['maxlength']">Max 50 characters.</ng-container>
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- Email -->
+          <div class="form-group" [class.has-error]="isInvalid('email')">
+            <label for="email">Email Address <span class="required-star">*</span></label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="e.g. jane.smith@velocitytech.com"
+              autocomplete="email">
+            <span class="field-error" *ngIf="isInvalid('email')">
+              <ng-container *ngIf="field('email').errors?.['required']">Email is required.</ng-container>
+              <ng-container *ngIf="field('email').errors?.['email']">Enter a valid email address.</ng-container>
+              <ng-container *ngIf="field('email').errors?.['maxlength']">Max 100 characters.</ng-container>
+            </span>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group" [class.has-error]="isInvalid('phoneNumber')">
+            <label for="phoneNumber">Phone Number</label>
+            <input
+              id="phoneNumber"
+              type="tel"
+              formControlName="phoneNumber"
+              placeholder="e.g. +1 555 123 4567"
+              autocomplete="tel">
+            <span class="field-error" *ngIf="isInvalid('phoneNumber')">
+              <ng-container *ngIf="field('phoneNumber').errors?.['pattern']">Enter a valid phone number (7–20 digits).</ng-container>
+            </span>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="form-group" [class.has-error]="isInvalid('address')">
+          <label for="address">Address</label>
+          <textarea
+            id="address"
+            formControlName="address"
+            placeholder="e.g. 123 Main St, Austin, TX 78701"
+            rows="2"
+            autocomplete="street-address">
+          </textarea>
+          <span class="field-error" *ngIf="isInvalid('address')">
+            <ng-container *ngIf="field('address').errors?.['maxlength']">Max 200 characters.</ng-container>
+          </span>
+        </div>
+      </section>
+
+      <!-- ── Section: Job Details ───────────────────────────────────────── -->
+      <section class="form-section">
+        <h3 class="section-title">Job Details</h3>
+
+        <div class="form-row">
+          <!-- Department -->
+          <div class="form-group" [class.has-error]="isInvalid('department')">
+            <label for="department">Department <span class="required-star">*</span></label>
+            <select id="department" formControlName="department">
+              <option value="" disabled>Select department…</option>
+              <option *ngFor="let dept of departmentOptions" [value]="dept">{{ dept }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('department')">
+              <ng-container *ngIf="field('department').errors?.['required']">Department is required.</ng-container>
+            </span>
+          </div>
+
+          <!-- Position -->
+          <div class="form-group" [class.has-error]="isInvalid('position')">
+            <label for="position">Position <span class="required-star">*</span></label>
+            <input
+              id="position"
+              type="text"
+              formControlName="position"
+              placeholder="e.g. Senior Software Engineer">
+            <span class="field-error" *ngIf="isInvalid('position')">
+              <ng-container *ngIf="field('position').errors?.['required']">Position is required.</ng-container>
+              <ng-container *ngIf="field('position').errors?.['maxlength']">Max 100 characters.</ng-container>
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- Hire Date -->
+          <div class="form-group" [class.has-error]="isInvalid('hireDate')">
+            <label for="hireDate">Hire Date <span class="required-star">*</span></label>
+            <input
+              id="hireDate"
+              type="date"
+              formControlName="hireDate">
+            <span class="field-error" *ngIf="isInvalid('hireDate')">
+              <ng-container *ngIf="field('hireDate').errors?.['required']">Hire date is required.</ng-container>
+            </span>
+          </div>
+
+          <!-- Manager ID -->
+          <div class="form-group">
+            <label for="managerId">Manager ID <span class="optional-hint">(optional)</span></label>
+            <input
+              id="managerId"
+              type="number"
+              formControlName="managerId"
+              placeholder="e.g. 42"
+              min="1">
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section: Access & Status ──────────────────────────────────── -->
+      <section class="form-section">
+        <h3 class="section-title">Access &amp; Status</h3>
+
+        <div class="form-row">
+          <!-- Role -->
+          <div class="form-group" [class.has-error]="isInvalid('role')">
+            <label for="role">Role <span class="required-star">*</span></label>
+            <select id="role" formControlName="role">
+              <option *ngFor="let opt of roleOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('role')">
+              <ng-container *ngIf="field('role').errors?.['required']">Role is required.</ng-container>
+            </span>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group" [class.has-error]="isInvalid('status')">
+            <label for="status">Status <span class="required-star">*</span></label>
+            <select id="status" formControlName="status">
+              <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+            <span class="field-error" *ngIf="isInvalid('status')">
+              <ng-container *ngIf="field('status').errors?.['required']">Status is required.</ng-container>
+            </span>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /.form-card -->
+
+    <!-- ── Action buttons ──────────────────────────────────────────────── -->
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="onCancel()" [disabled]="submitting">
+        Cancel
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="submitting">
+        <span *ngIf="submitting" class="spinner" aria-hidden="true"></span>
+        {{ submitting ? 'Saving…' : 'Create Employee' }}
+      </button>
+    </div>
+
+  </form>
+</div>

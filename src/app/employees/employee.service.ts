@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Employee, EmployeeStatus, PagedResponse } from '../shared/models/employee.model';
+import { CreateEmployeeRequest, Employee, EmployeeStatus, PagedResponse } from '../shared/models/employee.model';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
@@ -51,5 +51,14 @@ export class EmployeeService {
 
   getEmployeeById(id: number): Observable<Employee> {
     return this.http.get<Employee>(`${this.API}/${id}`);
+  }
+
+  /**
+   * Create a new employee record.
+   * @param payload  CreateEmployeeRequest — all required fields
+   * @returns        the newly-created Employee returned by the API
+   */
+  createEmployee(payload: CreateEmployeeRequest): Observable<Employee> {
+    return this.http.post<Employee>(this.API, payload);
   }
 }

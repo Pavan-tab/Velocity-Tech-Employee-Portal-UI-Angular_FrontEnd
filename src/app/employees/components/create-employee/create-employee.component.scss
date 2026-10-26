@@ -1,0 +1,251 @@
+// ── Design tokens mirror employee-list.component.scss ────────────────────────
+$primary:      #4f46e5;
+$primary-dark: #4338ca;
+$danger:       #dc2626;
+$danger-bg:    #fef2f2;
+$danger-border:#fecaca;
+$border:       #e2e8f0;
+$bg-surface:   #f8fafc;
+$text-main:    #1f2937;
+$text-muted:   #64748b;
+$navy:         #1a1a2e;
+$radius:       8px;
+
+// ── Navbar (shared pattern) ──────────────────────────────────────────────────
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $navy;
+  color: #fff;
+  padding: 0.875rem 1.5rem;
+
+  .navbar-brand {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid #ffffff44;
+  color: #fff;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: #ffffff1a; }
+}
+
+// ── Page shell ───────────────────────────────────────────────────────────────
+.content {
+  padding: 1.5rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $navy;
+    margin: 0 0 0.25rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.825rem;
+    color: $text-muted;
+    margin: 0;
+  }
+}
+
+.required-star {
+  color: $danger;
+  font-weight: 700;
+}
+
+.optional-hint {
+  color: $text-muted;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+// ── Error banner ─────────────────────────────────────────────────────────────
+.error-banner {
+  background: $danger-bg;
+  color: $danger;
+  border: 1px solid $danger-border;
+  border-radius: $radius;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+// ── Form card ────────────────────────────────────────────────────────────────
+.form-card {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+// ── Form section (grouped fields under a heading) ────────────────────────────
+.form-section {
+  padding: 1.25rem 1.5rem;
+
+  & + & {
+    border-top: 1px solid $border;
+  }
+
+  .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 1rem;
+  }
+}
+
+// ── Two-column row ───────────────────────────────────────────────────────────
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Individual field group ───────────────────────────────────────────────────
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+
+  &:last-child { margin-bottom: 0; }
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $border;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: $text-main;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder { color: #94a3b8; }
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 2px #{$primary}20;
+    }
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+    background-size: 12px 8px;
+    padding-right: 2rem;
+    cursor: pointer;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  // Error state
+  &.has-error {
+    input, select, textarea {
+      border-color: $danger;
+      background: #fffafa;
+
+      &:focus { box-shadow: 0 0 0 2px #{$danger}20; }
+    }
+  }
+
+  .field-error {
+    font-size: 0.75rem;
+    color: $danger;
+    min-height: 1em;
+  }
+}
+
+// ── Action buttons ───────────────────────────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $primary;
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+
+  &:hover:not(:disabled)  { background: $primary-dark; }
+  &:active:not(:disabled) { transform: scale(0.98); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.btn-secondary {
+  background: #fff;
+  color: $text-main;
+  border: 1px solid $border;
+  padding: 0.55rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) { background: $bg-surface; border-color: #cbd5e1; }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+// ── Spinner (shown while submitting) ─────────────────────────────────────────
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff55;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

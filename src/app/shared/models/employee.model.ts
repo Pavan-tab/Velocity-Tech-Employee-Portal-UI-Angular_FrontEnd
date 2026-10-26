@@ -31,6 +31,24 @@ export interface PagedResponse<T> {
   last: boolean;
 }
 
+/**
+ * Payload sent to POST /api/employees when creating a new employee.
+ * All fields except phoneNumber and address are required.
+ */
+export interface CreateEmployeeRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  department: string;
+  position: string;
+  hireDate: string;        // ISO date string e.g. "2024-03-15"
+  status: EmployeeStatus;
+  role: Role;
+  phoneNumber?: string;
+  address?: string;
+  managerId?: number | null;
+}
+
 export interface EmployeeSearchCriteria {
   searchText?: string;
   departments?: string[];
