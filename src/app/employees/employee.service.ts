@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { CreateEmployeeRequest, Employee, EmployeeStatus, PagedResponse } from '../shared/models/employee.model';
+import { CreateEmployeeRequest, UpdateEmployeeRequest, Employee, EmployeeStatus, PagedResponse } from '../shared/models/employee.model';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
@@ -60,5 +60,15 @@ export class EmployeeService {
    */
   createEmployee(payload: CreateEmployeeRequest): Observable<Employee> {
     return this.http.post<Employee>(this.API, payload);
+  }
+
+  /**
+   * Update an existing employee record.
+   * @param id       numeric employee ID
+   * @param payload  UpdateEmployeeRequest — all required fields re-submitted
+   * @returns        the updated Employee returned by the API
+   */
+  updateEmployee(id: number, payload: UpdateEmployeeRequest): Observable<Employee> {
+    return this.http.put<Employee>(`${this.API}/${id}`, payload);
   }
 }

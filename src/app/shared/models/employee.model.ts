@@ -49,6 +49,24 @@ export interface CreateEmployeeRequest {
   managerId?: number | null;
 }
 
+/**
+ * Payload sent to PUT /api/employees/:id when updating an existing employee.
+ * Mirrors CreateEmployeeRequest — all required fields must be re-submitted.
+ */
+export interface UpdateEmployeeRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  department: string;
+  position: string;
+  hireDate: string;        // ISO date string e.g. "2024-03-15"
+  status: EmployeeStatus;
+  role: Role;
+  phoneNumber?: string;
+  address?: string;
+  managerId?: number | null;
+}
+
 export interface EmployeeSearchCriteria {
   searchText?: string;
   departments?: string[];

@@ -22,6 +22,15 @@ export const routes: Routes = [
       )
   },
   {
+    // Must come before employees/:id so ":id/edit" is never swallowed by the detail route
+    path: 'employees/:id/edit',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./employees/components/edit-employee/edit-employee.component').then(
+        m => m.EditEmployeeComponent
+      )
+  },
+  {
     path: 'employees/:id',
     canActivate: [authGuard],
     loadComponent: () =>
