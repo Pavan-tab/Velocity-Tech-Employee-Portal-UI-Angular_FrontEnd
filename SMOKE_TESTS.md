@@ -26,7 +26,7 @@
 ---
 
 ### E3 — Form Pre-fill via patchValue
-**Commit:** `<this commit>`
+**Commit:** `b499426`
 **Verified:**
 - `fetchEmployee()` calls the private `patchForm(emp: Employee)` helper on the `next` path (`.component.ts` line 117).
 - `patchForm` calls `this.form.patchValue(...)` mapping all 11 fields:
@@ -38,7 +38,7 @@
 ---
 
 ### E4 — Validation Errors on Empty / Invalid Submit
-**Commit:** `<this commit>`
+**Commit:** `b499426`
 **Verified:**
 - `onSubmit()` calls `this.form.markAllAsTouched()` when `form.invalid`, causing all untouched controls to surface their errors (`.component.ts` line 161).
 - `isInvalid(name)` returns `true` when a control is `invalid && (dirty || touched)` (`.component.ts` lines 152–154).
@@ -62,7 +62,7 @@
 ---
 
 ### E5 — Successful Save Triggers PUT and Navigates Back
-**Commit:** `<this commit>`
+**Commit:** `b499426`
 **Verified:**
 - `onSubmit()` sets `submitting = true` and clears `submitError` before the API call (`.component.ts` lines 165–166).
 - `employeeService.updateEmployee(this.employeeId, payload)` is called with the correct numeric ID and a fully-constructed `UpdateEmployeeRequest` payload (line 184).
@@ -73,7 +73,7 @@
 ---
 
 ### E6 — API Failure on Submit Shows Error Banner and Re-enables Save
-**Commit:** `<this commit>`
+**Commit:** `b499426`
 **Verified:**
 - On the `error` path of the `updateEmployee` subscription: `submitting` is set to `false` and `submitError` is populated from `err?.error?.message ?? err?.error?.error ?? 'Failed to update employee. Please try again.'` (`.component.ts` lines 190–193).
 - The `submitError` banner is rendered inside the `<form>` block via `*ngIf="submitError"` (`.component.html` lines 43–45), so it appears only when there is an error and is scoped within the form context.
