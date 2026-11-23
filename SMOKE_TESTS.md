@@ -82,6 +82,19 @@
 
 ---
 
+### E7 — Load Error State: Banner, Retry Button, and Form Hidden
+**Commit:** `f7efc70`
+**Verified:**
+- `fetchEmployee()` sets `loading = true` and `loadError = ''` at the start of every call (`.component.ts` lines 108–109), so a retry always begins with a clean state.
+- On the `error` path of `getEmployeeById`: `loading` is set to `false` and `loadError` is populated from `err?.error?.message ?? err?.error?.error ?? 'Failed to load employee data. Please try again.'` (`.component.ts` lines 120–124).
+- The load error banner is rendered via `*ngIf="loadError"` with `role="alert"` (`.component.html` lines 26–29), displaying the error message and a **Retry** button.
+- The Retry button binds `(click)="fetchEmployee()"` directly (`.component.html` line 28), re-triggering the full fetch cycle on click.
+- The form is gated behind `*ngIf="!loading && !loadError && employee"` (`.component.html` line 37), so it remains completely hidden when `loadError` is non-empty — the user never sees a partially-rendered form alongside the error banner.
+- The loading spinner is independently gated by `*ngIf="loading"` (`.component.html` line 32), so it shows again during a retry request and disappears once the response arrives.
+- The `submitError` state is not affected by a load failure — the two error states are fully independent.
+
+---
+
 ## Production Build — Week 6 Verification
 **Result:** ✅ Zero compilation errors
 
@@ -98,7 +111,6 @@ Application bundle generation complete. [3.120 seconds]
 
 | ID  | Description                                                                 |
 |-----|-----------------------------------------------------------------------------|
-| E7  | Load error state: `loadError` banner shown, Retry button calls `fetchEmployee()` |
 | E8  | HR access control: non-HR users redirected to `/employees` in `ngOnInit()`  |
 | E9  | Cancel button navigates back without triggering any API call                |
 | E10 | Definitive production build sign-off for Phase 3, Item 2                   |
